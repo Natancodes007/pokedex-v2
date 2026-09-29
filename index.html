@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,21 +60,21 @@ dt{font-size:12px;color:#aab4c6}dd{font-size:18px;font-weight:bold;margin-top:2p
 <main class="pokedex">
   <header class="topo">
     <span class="lente" aria-hidden="true"></span>
-    <div><h1>Pokédex Digital</h1><p>Busque por nome ou número (1 a 1025)</p></div>
+    <div><h1>Pokédex Digital</h1><p>Search by name or number (1 to 1025)</p></div>
     <span class="luzes" aria-hidden="true"><i></i><i></i><i></i></span>
   </header>
 
   <form id="form" class="busca">
-    <label class="sr" for="q">Nome ou número do Pokémon</label>
-    <input id="q" list="nomes" placeholder="Ex: pikachu ou 25" autocomplete="off" autocapitalize="none" spellcheck="false">
-    <button type="submit">Buscar</button>
+    <label class="sr" for="q">Pokémon name or number</label>
+    <input id="q" list="nomes" placeholder="e.g. pikachu or 25" autocomplete="off" autocapitalize="none" spellcheck="false">
+    <button type="submit">Search</button>
   </form>
   <datalist id="nomes"></datalist>
 
-  <nav class="nav" aria-label="Navegação">
-    <button id="ant" type="button">◀ Anterior</button>
-    <button id="rnd" type="button">🎲 Aleatório</button>
-    <button id="prox" type="button">Próximo ▶</button>
+  <nav class="nav" aria-label="Navigation">
+    <button id="ant" type="button">◀ Previous</button>
+    <button id="rnd" type="button">🎲 Random</button>
+    <button id="prox" type="button">Next ▶</button>
   </nav>
 
   <p id="msg" class="msg" role="status" aria-live="polite"></p>
@@ -83,27 +83,27 @@ dt{font-size:12px;color:#aab4c6}dd{font-size:18px;font-weight:bold;margin-top:2p
     <div class="palco">
       <span id="num" class="num"></span>
       <div class="acoes">
-        <button id="bShiny" type="button" title="Alternar versão shiny" aria-label="Alternar versão shiny" aria-pressed="false">✨</button>
-        <button id="bFav" type="button" title="Favoritar" aria-label="Favoritar" aria-pressed="false">☆</button>
-        <button id="bGrito" type="button" title="Ouvir o grito" aria-label="Ouvir o grito">🔊</button>
+        <button id="bShiny" type="button" title="Toggle shiny version" aria-label="Toggle shiny version" aria-pressed="false">✨</button>
+        <button id="bFav" type="button" title="Add to favorites" aria-label="Add to favorites" aria-pressed="false">☆</button>
+        <button id="bGrito" type="button" title="Play cry" aria-label="Play cry">🔊</button>
       </div>
       <img id="img" alt="">
     </div>
     <h2 id="nome"></h2>
     <div id="tipos" class="chips centro"></div>
     <dl class="medidas">
-      <div><dt>Altura</dt><dd id="alt"></dd></div>
-      <div><dt>Peso</dt><dd id="peso"></dd></div>
-      <div><dt>Exp. base</dt><dd id="exp"></dd></div>
+      <div><dt>Height</dt><dd id="alt"></dd></div>
+      <div><dt>Weight</dt><dd id="peso"></dd></div>
+      <div><dt>Base exp.</dt><dd id="exp"></dd></div>
     </dl>
-    <h3>Habilidades</h3>
+    <h3>Abilities</h3>
     <div id="hab" class="chips"></div>
-    <h3>Atributos base</h3>
+    <h3>Base stats</h3>
     <div id="stats"></div>
   </section>
 
   <section class="favs">
-    <h3>Favoritos</h3>
+    <h3>Favorites</h3>
     <div id="favs" class="chips"></div>
   </section>
 </main>
@@ -112,8 +112,8 @@ dt{font-size:12px;color:#aab4c6}dd{font-size:18px;font-weight:bold;margin-top:2p
 const API = 'https://pokeapi.co/api/v2/pokemon/';
 const MAX = 1025;
 const COR = {normal:'#a8a77a',fire:'#ee8130',water:'#6390f0',electric:'#f7d02c',grass:'#7ac74c',ice:'#96d9d6',fighting:'#c22e28',poison:'#a33ea1',ground:'#e2bf65',flying:'#a98ff3',psychic:'#f95587',bug:'#a6b91a',rock:'#b6a136',ghost:'#735797',dragon:'#6f35fc',dark:'#705746',steel:'#b7b7ce',fairy:'#d685ad'};
-const PT = {normal:'normal',fire:'fogo',water:'água',electric:'elétrico',grass:'planta',ice:'gelo',fighting:'lutador',poison:'veneno',ground:'terra',flying:'voador',psychic:'psíquico',bug:'inseto',rock:'pedra',ghost:'fantasma',dragon:'dragão',dark:'sombrio',steel:'aço',fairy:'fada'};
-const STAT = {hp:'PS',attack:'Ataque',defense:'Defesa','special-attack':'Atq. especial','special-defense':'Def. especial',speed:'Velocidade'};
+const PT = {};
+const STAT = {hp:'HP',attack:'Attack',defense:'Defense','special-attack':'Sp. Atk','special-defense':'Sp. Def',speed:'Speed'};
 
 const $ = id => document.getElementById(id);
 const cache = new Map();
@@ -137,9 +137,9 @@ const limpa = s => s.replace(/-/g, ' ');
 
 async function carregar(termo) {
   termo = String(termo).toLowerCase().trim();
-  if (!termo) { $('msg').textContent = 'Digite um nome ou número.'; return; }
+  if (!termo) { $('msg').textContent = 'Enter a name or number.'; return; }
   const id = ++reqId;
-  $('msg').textContent = 'Buscando na internet... 📡';
+  $('msg').textContent = 'Searching the internet... 📡';
   $('card').classList.add('carregando');
   try {
     let d = cache.get(termo);
@@ -155,8 +155,8 @@ async function carregar(termo) {
     if (id !== reqId) return;
     $('card').classList.remove('carregando');
     $('msg').textContent = e.message === 'nao-achou'
-      ? `❌ Nenhum Pokémon com "${termo}". Confira o nome ou use um número de 1 a ${MAX}.`
-      : '❌ Não foi possível falar com a PokeAPI. Verifique a internet e tente de novo.';
+      ? `❌ No Pokémon found for "${termo}". Check the spelling or use a number from 1 to ${MAX}.`
+      : '❌ Could not reach the PokeAPI. Check your connection and try again.';
     console.error(e);
   }
 }
@@ -194,7 +194,7 @@ function render(d) {
   $('exp').textContent = d.base_experience ?? '—';
 
   const hab = $('hab'); hab.replaceChildren();
-  d.abilities.forEach(a => hab.append(el('span', 'chip', limpa(a.ability.name) + (a.is_hidden ? ' (oculta)' : ''))));
+  d.abilities.forEach(a => hab.append(el('span', 'chip', limpa(a.ability.name) + (a.is_hidden ? ' (hidden)' : ''))));
 
   const st = $('stats'); st.replaceChildren();
   d.stats.forEach(s => {
@@ -217,9 +217,9 @@ function atualizaFav() {
   const b = $('bFav');
   b.textContent = eh ? '★' : '☆';
   b.setAttribute('aria-pressed', !!eh);
-  b.title = b.ariaLabel = eh ? 'Remover dos favoritos' : 'Favoritar';
+  b.title = b.ariaLabel = eh ? 'Remove from favorites' : 'Add to favorites';
   const box = $('favs'); box.replaceChildren();
-  if (!favs.length) { box.append(el('p', 'vazio', 'Toque na ☆ de um Pokémon para salvar aqui.')); return; }
+  if (!favs.length) { box.append(el('p', 'vazio', 'Tap the ☆ on a Pokémon to save it here.')); return; }
   favs.forEach(f => {
     const b2 = el('button', '', `#${f.id} ${limpa(f.name)}`);
     b2.type = 'button';
@@ -257,7 +257,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') vizinho(1);
 });
 
-// Sugestões de nomes no campo de busca
+// Name suggestions for the search field
 fetch(API + '?limit=' + MAX).then(r => r.json()).then(l => {
   const dl = $('nomes');
   l.results.forEach(p => { const o = document.createElement('option'); o.value = p.name; dl.append(o); });
